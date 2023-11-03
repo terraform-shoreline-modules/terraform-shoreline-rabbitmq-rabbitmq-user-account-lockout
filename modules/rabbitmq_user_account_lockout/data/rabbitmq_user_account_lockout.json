@@ -1,0 +1,106 @@
+{
+  "name": "rabbitmq_user_account_lockout",
+  "description": "This incident type refers to the situation when a user account in RabbitMQ messaging system is locked out and inaccessible. This could be caused by various reasons such as incorrect login attempts, system errors or security measures. The incident requires investigation to identify the root cause and unlock the affected accounts to restore proper functionality.",
+  "params": [
+    {
+      "name": "NEW_PASSWORD",
+      "value": ""
+    },
+    {
+      "name": "USERNAME",
+      "value": ""
+    },
+    {
+      "name": "HOST_NAME",
+      "value": ""
+    },
+    {
+      "name": "K8S_CLUSTER_NAME",
+      "value": ""
+    },
+    {
+      "name": "NAMESPACE",
+      "value": ""
+    }
+  ],
+  "cells": [
+    {
+      "name": "cell_1",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## RabbitMQ User Account Lockout\nThis incident type refers to the situation when a user account in RabbitMQ messaging system is locked out and inaccessible. This could be caused by various reasons such as incorrect login attempts, system errors or security measures. The incident requires investigation to identify the root cause and unlock the affected accounts to restore proper functionality."
+    },
+    {
+      "name": "cell_2",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## 4. Check RabbitMQ user permissions"
+    },
+    {
+      "name": "cell_3",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `sudo rabbitmqctl list_user_permissions ${USERNAME}`"
+    },
+    {
+      "name": "cell_4",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## 5. Unlock RabbitMQ user account"
+    },
+    {
+      "name": "cell_5",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `sudo rabbitmqctl clear_password ${USERNAME}`"
+    },
+    {
+      "name": "cell_6",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## 1. Check RabbitMQ status"
+    },
+    {
+      "name": "cell_7",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `sudo systemctl status rabbitmq-server`"
+    },
+    {
+      "name": "cell_8",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## 2. Check RabbitMQ logs for errors"
+    },
+    {
+      "name": "cell_9",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `sudo journalctl -u rabbitmq-server | grep -i error`"
+    },
+    {
+      "name": "cell_10",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## 3. Check RabbitMQ user accounts"
+    },
+    {
+      "name": "cell_11",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `sudo rabbitmqctl list_users`"
+    },
+    {
+      "name": "cell_12",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Once the root cause has been identified, take steps to resolve the issue. For example, if the account was locked due to failed login attempts, reset the password or investigate any potential security breaches."
+    },
+    {
+      "name": "cell_13",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_reset_user_password($NEW_PASSWORD, $USERNAME)"
+    }
+  ]
+}
